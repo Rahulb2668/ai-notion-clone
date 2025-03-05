@@ -1,14 +1,57 @@
+"use client";
+
+import { useCollection } from "react-firebase-hooks/firestore";
 import { MenuIcon } from "lucide-react";
 import NewDocumentButton from "./NewDocumentButton";
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { useUser } from "@clerk/nextjs";
+import { collectionGroup, query, where } from "firebase/firestore";
+import { db } from "@/firebase";
+import { useEffect } from "react";
+import { RoomDocument } from "@/types/types";
+
 const Sidebar = () => {
+  const { user } = useUser();
+  const [data, loading, error] = useCollection(
+    user &&
+      query(
+        collectionGroup(db, "rooms"),
+        where("userId", "==", user.emailAddresses[0].toString())
+      )
+  );
+
+  useEffect(() => {
+    if (!data) return;
+
+    const grouped = data.docs.reduce<{
+      owner: RoomDocument[];
+      editor: RoomDocument[];
+    }>(
+      (acc, current) => {
+        const roomData = current.data() as RoomDocument;
+        if (roomData.role === "owner") {
+          acc.owner.push({
+            id: current.id,
+            ...roomData,
+          });
+        } else {
+          acc.editor.push({
+            id: current.id,
+            ...roomData,
+          });
+        }
+        return acc;
+      },
+      { owner: [], editor: [] }
+    );
+  }, [data]);
+
   const menuOptions = (
     <>
       <NewDocumentButton />
