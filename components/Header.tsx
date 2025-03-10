@@ -8,6 +8,7 @@ import {
   useUser,
 } from "@clerk/nextjs";
 import Link from "next/link";
+import Breadcrumbs from "./Breadcrumbs";
 
 export default function Header() {
   const { user } = useUser();
@@ -22,7 +23,7 @@ export default function Header() {
         </Link>
       )}
 
-      {/* BreadCrumbs */}
+      <Breadcrumbs />
 
       <div>
         <SignedOut>
