@@ -1,5 +1,7 @@
+import stringToHexColor from "@/lib/stringToColor";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
+import { MousePointer2 as MousePointer, TextCursor } from "lucide-react";
 
 const FollowPointer = ({
   info,
@@ -16,8 +18,33 @@ const FollowPointer = ({
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [animationKey, setAnimationKey] = useState(0);
+  const [isMoving, setIsMoving] = useState(true);
+  const [lastPosition, setLastPosition] = useState({ x, y });
   const color = stringToHexColor(info.email || "1");
   const displayName = info.name || info.email.split("@")[0];
+
+  // Detect if cursor is moving
+  useEffect(() => {
+    const movementThreshold = 5; // pixels
+    const isCurrentlyMoving =
+      Math.abs(x - lastPosition.x) > movementThreshold ||
+      Math.abs(y - lastPosition.y) > movementThreshold;
+
+    if (isCurrentlyMoving) {
+      setIsMoving(true);
+      // Update last position after a small delay
+      const timer = setTimeout(() => {
+        setLastPosition({ x, y });
+      }, 100);
+      return () => clearTimeout(timer);
+    } else {
+      // Set to not moving after a delay
+      const timer = setTimeout(() => {
+        setIsMoving(false);
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, [x, y, lastPosition]);
 
   // Trigger pulse animation periodically
   useEffect(() => {
@@ -56,48 +83,34 @@ const FollowPointer = ({
         }}
         className="relative"
       >
-        {/* SVG Cursor */}
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          className="absolute"
-          style={{ top: -10, left: -10 }}
-        >
-          {/* Outer ring */}
-          <circle
-            cx="12"
-            cy="12"
-            r="10"
-            fill="none"
-            stroke={color}
-            strokeWidth="1.5"
-          />
+        {/* Lucide Icon - switches between pointer and cursor */}
+        <div className="absolute" style={{ top: -12, left: -12 }}>
+          {isMoving ? (
+            <MousePointer
+              size={20}
+              color={color}
+              fill={`${color}22`}
+              strokeWidth={2}
+            />
+          ) : (
+            <TextCursor size={20} color={color} strokeWidth={2} />
+          )}
+        </div>
 
-          {/* Inner dot */}
-          <circle cx="12" cy="12" r="4" fill={color} />
-
-          {/* Decorative elements */}
-          <path
-            d="M12 2 L12 5 M12 19 L12 22 M2 12 L5 12 M19 12 L22 12"
-            stroke={color}
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-        </svg>
-
-        {/* User info tooltip */}
+        {/* User info tooltip shown below the icon */}
         <motion.div
-          className="absolute rounded-lg px-3 py-1 text-xs font-medium whitespace-nowrap shadow-lg"
+          className="absolute rounded-lg px-2 py-0.5 text-xs font-medium whitespace-nowrap shadow-md"
           style={{
-            backgroundColor: `${color}22` /* Color with 22 opacity */,
-            borderLeft: `3px solid ${color}`,
+            backgroundColor: `${color}22`,
+            border: `1px solid ${color}`,
             color: color,
-            left: 20,
-            top: -10,
+            top: 12,
+            left: -12,
+            transform: "translateX(-50%)",
+            minWidth: "max-content",
           }}
-          initial={{ opacity: 0, x: -10 }}
-          animate={{ opacity: 1, x: 0, transition: { delay: 0.1 } }}
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0, transition: { delay: 0.1 } }}
         >
           {displayName}
         </motion.div>
@@ -109,8 +122,8 @@ const FollowPointer = ({
         className="absolute rounded-full"
         style={{
           border: `2px solid ${color}`,
-          top: 2,
-          left: 2,
+          top: -8,
+          left: -8,
         }}
         initial={{ width: 0, height: 0, opacity: 0.7 }}
         animate={{

@@ -1,4 +1,4 @@
-function stringToHexColor(str: string) {
+export default function stringToHexColor(str: string) {
   // Simple hash function
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
