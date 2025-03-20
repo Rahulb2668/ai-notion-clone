@@ -5,6 +5,9 @@ import { db } from "@/firebase";
 import Editor from "./Editor";
 import useOwner from "@/lib/useOwner";
 import DeleteDocumentButton from "./DeleteDocumentButton";
+import InviteUser from "./InviteUser";
+import ManageUsers from "./ManageUsers";
+import Avatars from "./Avatars";
 
 const Document = ({ id }: { id: string }) => {
   const [data, isLoading, error] = useDocumentData(doc(db, "documents", id));
@@ -24,15 +27,18 @@ const Document = ({ id }: { id: string }) => {
         {isOwner && (
           <>
             {/* Invite user */}
+            <InviteUser />
             {/* Delete Document  */}
             <DeleteDocumentButton />
           </>
         )}
       </div>
 
-      <div>
+      <div className="flex max-w-6xl mx-auto justify-between items-center mb-10">
         {/* Manage users */}
+        <ManageUsers />
         {/* Avatars */}
+        <Avatars />
       </div>
 
       <hr className="pb-10" />

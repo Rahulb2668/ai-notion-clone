@@ -81,19 +81,24 @@ const Sidebar = () => {
             ))}
           </>
         )}
+
+        {groupedData.editor.length > 0 && (
+          <>
+            <h2 className="text-gray-500 font-semibold text-sm">
+              Shared with me
+            </h2>
+            {groupedData.editor.map((doc: RoomDocument) => (
+              <SidebarOptions
+                href={`/doc/${doc.id}`}
+                id={doc.id}
+                key={doc.id}
+              />
+            ))}
+          </>
+        )}
       </div>
 
       {/* Shared with me */}
-      {groupedData.editor.length > 0 && (
-        <>
-          <h2 className="text-gray-500 font-semibold text-sm">
-            Shared with me
-          </h2>
-          {groupedData.owner.map((doc: RoomDocument) => (
-            <SidebarOptions href={`/doc/${doc.id}`} id={doc.id} key={doc.id} />
-          ))}
-        </>
-      )}
 
       {/* Trash */}
       {/* List ... */}
