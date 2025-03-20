@@ -19,12 +19,11 @@ function useOwner() {
       const owners = usersInRoom.docs.filter(
         (doc) => doc.data().role === "owner"
       );
-
       if (
         owners.some(
           (owner) =>
-            (owner.data().userId =
-              user?.emailAddresses[0].emailAddress.toString())
+            owner.data().userId ===
+            user?.emailAddresses[0].emailAddress.toString()
         )
       ) {
         setIsOwner(true);

@@ -62,3 +62,49 @@ export const deleteDocument = async (
     return { success: false };
   }
 };
+
+export const inviteUserToRoom = async (
+  roomId: string,
+  email: string
+): Promise<{ success: boolean }> => {
+  const { userId, redirectToSignIn, sessionClaims } = await auth();
+
+  if (!userId) return redirectToSignIn();
+
+  try {
+    await adminDb
+      .collection("users")
+      .doc(email)
+      .collection("rooms")
+      .doc(roomId)
+      .set({
+        userId: email,
+        roomId,
+        role: "editor",
+        createdAt: new Date(),
+      });
+
+    return { success: true };
+  } catch (error) {
+    return { success: false };
+  }
+};
+
+export const removeUserFromDocument = async (roomId: string, email: string) => {
+  const { userId, redirectToSignIn, sessionClaims } = await auth();
+
+  if (!userId) return redirectToSignIn();
+
+  try {
+    await adminDb
+      .collection("users")
+      .doc(email)
+      .collection("rooms")
+      .doc(roomId)
+      .delete();
+
+    return { success: true };
+  } catch (error) {
+    return { success: false };
+  }
+};
