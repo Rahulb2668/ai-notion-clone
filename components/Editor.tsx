@@ -7,6 +7,8 @@ import { getYjsProviderForRoom, LiveblocksYjsProvider } from "@liveblocks/yjs";
 import { Moon, Sun } from "lucide-react";
 import { Button } from "./ui/button";
 import BlockNote from "./BlockNote";
+import TranslateDocument from "./TranslateDocument";
+import ChatToDocument from "./ChatToDocument";
 const Editor = () => {
   const room = useRoom();
   const [darkMode, setDarkMode] = useState(false);
@@ -19,8 +21,9 @@ const Editor = () => {
   return (
     <div className="max-w-6xl mx-auto">
       <div className="flex justify-end gap-2 items-center my-4">
-        {/* Translate feature */}
+        <TranslateDocument doc={provider.getYDoc()} />
         {/* Chat to Document AI */}
+        <ChatToDocument doc={provider.getYDoc()} />
         <Button
           variant="outline"
           size="icon"
